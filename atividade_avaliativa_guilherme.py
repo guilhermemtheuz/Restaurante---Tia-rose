@@ -1,1214 +1,750 @@
-{
-  "nbformat": 4,
-  "nbformat_minor": 0,
-  "metadata": {
-    "colab": {
-      "provenance": [],
-      "authorship_tag": "ABX9TyMcz2eM1BjlOrDg1L2qBv1K",
-      "include_colab_link": true
-    },
-    "kernelspec": {
-      "name": "python3",
-      "display_name": "Python 3"
-    },
-    "language_info": {
-      "name": "python"
-    }
-  },
-  "cells": [
-    {
-      "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github",
-        "colab_type": "text"
-      },
-      "source": [
-        "<a href=\"https://colab.research.google.com/github/guilhermemtheuz/Restaurante---Tia-rose/blob/main/atividade_avaliativa_guilherme.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "source": [
-        "CAFÉ - TIA ROSA"
-      ],
-      "metadata": {
-        "id": "eCsNohvXZpiM"
-      }
-    },
-    {
-      "cell_type": "code",
-      "source": [],
-      "metadata": {
-        "id": "DM7y3q1MZ8Fd"
-      },
-      "execution_count": null,
-      "outputs": []
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "from datetime import datetime\n",
-        "# =============================================================\n",
-        "# ORGANIZAÇÃO DA LOJA\n",
-        "# =============================================================\n",
-        "class Produto:\n",
-        "    def __init__(self, codigo, nome, preco, estoque, categoria):\n",
-        "        self.codigo = codigo\n",
-        "        self.nome = nome\n",
-        "        self.preco = float(preco)\n",
-        "        self.estoque = int(estoque)\n",
-        "        self.categoria = categoria\n",
-        "\n",
-        "    def __str__(self):\n",
-        "        return (\n",
-        "            f\"{self.codigo} - {self.nome} / \"\n",
-        "            f\"R$ {self.preco:.2f} / \"\n",
-        "            f\"Estoque: {self.estoque} / \"\n",
-        "            f\"Categoria: {self.categoria}\"\n",
-        "        )\n",
-        "# =============================================================\n",
-        "# DADOS DOS CLIENTES\n",
-        "# =============================================================\n",
-        "class Cliente:\n",
-        "    def __init__(self, codigo, nome, endereco, telefone):\n",
-        "        self.codigo = codigo\n",
-        "        self.nome = nome\n",
-        "        self.endereco = endereco\n",
-        "        self.telefone = telefone\n",
-        "\n",
-        "    def __str__(self):\n",
-        "        return (\n",
-        "            f\"{self.codigo} - {self.nome} / \"\n",
-        "            f\"{self.endereco} / {self.telefone}\"\n",
-        "        )\n",
-        "# =============================================================\n",
-        "# DADOS DOS PEDIDOS\n",
-        "# =============================================================\n",
-        "class Pedido:\n",
-        "    def __init__(self, numero, data, cliente, itens):\n",
-        "        self.numero = numero\n",
-        "        self.data = data\n",
-        "        self.cliente = cliente\n",
-        "        self.itens = itens\n",
-        "        self.total = self.calcular_total()\n",
-        "\n",
-        "    def calcular_total(self):\n",
-        "        total = 0.0\n",
-        "\n",
-        "        for item in self.itens:\n",
-        "            produto = item[\"produto\"]\n",
-        "            quantidade = item[\"quantidade\"]\n",
-        "\n",
-        "            total += produto.preco * quantidade\n",
-        "\n",
-        "        return round(total, 2)\n",
-        "  # =============================================================\n",
-        "  # HORÁRIO DE REALIAÇÃO DO PEDIDO\n",
-        "  # =============================================================\n",
-        "    def __str__(self):\n",
-        "        texto = (\n",
-        "            f\"Pedido #{self.numero} - \"\n",
-        "            f\"Cliente: {self.cliente.nome} - \"\n",
-        "            f\"Data: {self.data.strftime('%d/%m/%Y %H:%M')}\\n\")\n",
-        "\n",
-        "\n",
-        "        for item in self.itens:\n",
-        "            produto = item[\"produto\"]\n",
-        "            qtd = item[\"quantidade\"]\n",
-        "\n",
-        "            texto += (\n",
-        "                f\" - {produto.nome} x{qtd} = \"\n",
-        "                f\"R$ {produto.preco * qtd:.2f}\\n\"\n",
-        "            )\n",
-        "\n",
-        "        texto += f\"Total: R$ {self.total:.2f}\"\n",
-        "\n",
-        "        return texto\n",
-        "\n",
-        "\n",
-        "class CoffeShopTiaRosa:\n",
-        "\n",
-        "    def __init__(self):\n",
-        "        self.produtos = []\n",
-        "        self.clientes = []\n",
-        "        self.pedidos = []\n",
-        "        self.proximo_numero_pedido = 1\n",
-        "\n",
-        "        self._carregar_dados_iniciais()\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # DADOS DOS PRODUTOS\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def _carregar_dados_iniciais(self):\n",
-        "\n",
-        "        self.produtos.append(\n",
-        "            Produto(\n",
-        "                \"001\",\n",
-        "                \"Café tradicional\",\n",
-        "                2.00,\n",
-        "                20,\n",
-        "                \"Bebida\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "        self.produtos.append(\n",
-        "            Produto(\n",
-        "                \"002\",\n",
-        "                \"Café com leite\",\n",
-        "                5.00,\n",
-        "                20,\n",
-        "                \"Bebida\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "        self.produtos.append(\n",
-        "            Produto(\n",
-        "                \"003\",\n",
-        "                \"Cappuccino\",\n",
-        "                7.50,\n",
-        "                20,\n",
-        "                \"Bebida\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "        self.produtos.append(\n",
-        "            Produto(\n",
-        "                \"004\",\n",
-        "                \"Pão de Queijo\",\n",
-        "                3.50,\n",
-        "                20,\n",
-        "                \"Café da manhã\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "        self.produtos.append(\n",
-        "            Produto(\n",
-        "                \"005\",\n",
-        "                \"Bolo de chocolate\",\n",
-        "                7.00,\n",
-        "                20,\n",
-        "                \"Doce\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "        self.clientes.append(\n",
-        "            Cliente(\"CLI001\", \"Guilherme Matheus\", \"Rua A, 123\",\"610000001\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "        self.clientes.append(\n",
-        "            Cliente(\n",
-        "                \"CLI002\",\n",
-        "                \"Geovana Flor\",\n",
-        "                \"Rua B, 456\",\n",
-        "                \"610000002\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "        self.clientes.append(\n",
-        "            Cliente(\n",
-        "                \"CLI003\",\n",
-        "                \"Maria Antonia\",\n",
-        "                \"Rua C, 789\",\n",
-        "                \"610000003\"\n",
-        "            )\n",
-        "        )\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # LAYOUT DO MENU PRINCIPAL\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def executar(self):\n",
-        "\n",
-        "        while True:\n",
-        "\n",
-        "            print(\"\\n\" + \"~\" * 40)\n",
-        "            print(\"        CAFÉ - TIA ROSA - SYSTEM\")\n",
-        "            print(\"~\" * 40)\n",
-        "\n",
-        "            print(\"1. Cadastrar produto\")\n",
-        "            print(\"2. Listar produtos\")\n",
-        "            print(\"3. Cadastrar cliente\")\n",
-        "            print(\"4. Listar clientes\")\n",
-        "            print(\"5. Fazer pedido\")\n",
-        "            print(\"6. Listar pedidos\")\n",
-        "            print(\"7. Relatório de vendas\")\n",
-        "            print(\"0. Sair\")\n",
-        "\n",
-        "            opcao = input(\"\\nEscolha uma opção: \").strip()\n",
-        "\n",
-        "            if opcao == \"1\":\n",
-        "                self.cadastrar_produto()\n",
-        "\n",
-        "            elif opcao == \"2\":\n",
-        "                self.listar_produtos()\n",
-        "\n",
-        "            elif opcao == \"3\":\n",
-        "                self.cadastrar_cliente()\n",
-        "\n",
-        "            elif opcao == \"4\":\n",
-        "                self.listar_clientes()\n",
-        "\n",
-        "            elif opcao == \"5\":\n",
-        "                self.fazer_pedido()\n",
-        "\n",
-        "            elif opcao == \"6\":\n",
-        "                self.listar_pedidos()\n",
-        "\n",
-        "            elif opcao == \"7\":\n",
-        "                self.relatorio_vendas()\n",
-        "\n",
-        "            elif opcao == \"0\":\n",
-        "                print(\"\\nObrigado por usar TIA ROSA SYSTEM!\")\n",
-        "                break\n",
-        "\n",
-        "            else:\n",
-        "                print(\"\\nOpção inválida. Tente novamente.\")\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # BUSCAR PRODUTO POR CÓDIGO\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def buscar_produto_por_codigo(self, codigo):\n",
-        "\n",
-        "        for produto in self.produtos:\n",
-        "\n",
-        "            if produto.codigo.upper() == codigo.upper():\n",
-        "                return produto\n",
-        "\n",
-        "        return None\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # BUSCAR CLIENTE POR TELEFONE\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def buscar_cliente_por_telefone(self, telefone):\n",
-        "\n",
-        "        for cliente in self.clientes:\n",
-        "\n",
-        "            if cliente.telefone == telefone:\n",
-        "                return cliente\n",
-        "\n",
-        "        return None\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # CADASTRAR PRODUTO\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def cadastrar_produto(self):\n",
-        "\n",
-        "        print(\"\\n\" + \"=\" * 40)\n",
-        "        print(\"CADASTRO DE PRODUTO\")\n",
-        "        print(\"=\" * 40)\n",
-        "\n",
-        "        codigo = input(\n",
-        "            \"Digite o código do produto: \"\n",
-        "        ).strip().upper()\n",
-        "\n",
-        "        nome = input(\n",
-        "            \"Digite o nome do produto: \"\n",
-        "        ).strip()\n",
-        "\n",
-        "        if self.buscar_produto_por_codigo(codigo):\n",
-        "\n",
-        "            print(\n",
-        "                \"\\nJá existe um produto com esse código.\"\n",
-        "            )\n",
-        "\n",
-        "            return\n",
-        "\n",
-        "        try:\n",
-        "\n",
-        "            preco = float(\n",
-        "                input(\n",
-        "                    \"Digite o preço do produto: \"\n",
-        "                ).replace(\",\", \".\")\n",
-        "            )\n",
-        "\n",
-        "            estoque = int(\n",
-        "                input(\"Estoque inicial: \")\n",
-        "            )\n",
-        "\n",
-        "        except ValueError:\n",
-        "\n",
-        "            print(\n",
-        "                \"\\nPreço ou estoque inválido. \"\n",
-        "                \"Tente novamente.\"\n",
-        "            )\n",
-        "\n",
-        "            return\n",
-        "\n",
-        "        if preco <= 0 or estoque < 0:\n",
-        "\n",
-        "            print(\n",
-        "                \"\\nPreço deve ser maior que zero \"\n",
-        "                \"e estoque não pode ser negativo.\"\n",
-        "            )\n",
-        "\n",
-        "            return\n",
-        "\n",
-        "        categoria = input(\n",
-        "            \"Digite a categoria do produto: \"\n",
-        "        ).strip()\n",
-        "\n",
-        "        novo_produto = Produto(\n",
-        "            codigo,\n",
-        "            nome,\n",
-        "            preco,\n",
-        "            estoque,\n",
-        "            categoria\n",
-        "        )\n",
-        "\n",
-        "        self.produtos.append(novo_produto)\n",
-        "\n",
-        "        print(\"\\nProduto cadastrado com sucesso!\")\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # LISTAR PRODUTOS\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def listar_produtos(self):\n",
-        "\n",
-        "        print(\"\\n\" + \"=\" * 70)\n",
-        "        print(\"                         LISTA DE PRODUTOS\")\n",
-        "        print(\"=\" * 70)\n",
-        "\n",
-        "        if not self.produtos:\n",
-        "\n",
-        "            print(\"Nenhum produto cadastrado.\")\n",
-        "            return\n",
-        "\n",
-        "        for produto in self.produtos:\n",
-        "            print(produto)\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # CADASTRAR CLIENTE\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def cadastrar_cliente(self):\n",
-        "\n",
-        "        print(\"\\n\" + \"=\" * 40)\n",
-        "        print(\"          CADASTRO DE CLIENTE\")\n",
-        "        print(\"=\" * 40)\n",
-        "\n",
-        "        nome = input(\n",
-        "            \"Digite o nome do cliente: \"\n",
-        "        ).strip()\n",
-        "\n",
-        "        endereco = input(\n",
-        "            \"Digite o endereço do cliente: \"\n",
-        "        ).strip()\n",
-        "\n",
-        "        telefone = input(\n",
-        "            \"Digite o telefone do cliente: \"\n",
-        "        ).strip()\n",
-        "\n",
-        "        if not nome or not telefone or not endereco:\n",
-        "\n",
-        "            print(\n",
-        "                \"\\nNome, endereço e telefone \"\n",
-        "                \"são campos obrigatórios.\"\n",
-        "            )\n",
-        "\n",
-        "            return\n",
-        "\n",
-        "        if self.buscar_cliente_por_telefone(telefone):\n",
-        "\n",
-        "            print(\n",
-        "                \"\\nJá existe um cliente com esse telefone.\"\n",
-        "            )\n",
-        "\n",
-        "            return\n",
-        "\n",
-        "        codigo = f\"CLI{len(self.clientes) + 1:03d}\"\n",
-        "\n",
-        "        cliente = Cliente(\n",
-        "            codigo,\n",
-        "            nome,\n",
-        "            endereco,\n",
-        "            telefone\n",
-        "        )\n",
-        "\n",
-        "        self.clientes.append(cliente)\n",
-        "\n",
-        "        print(\"\\nCliente cadastrado com sucesso!\")\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # LISTAR CLIENTES\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def listar_clientes(self):\n",
-        "\n",
-        "        print(\"\\n\" + \"=\" * 70)\n",
-        "        print(\"LISTA DE CLIENTES\")\n",
-        "        print(\"=\" * 70)\n",
-        "\n",
-        "        if not self.clientes:\n",
-        "\n",
-        "            print(\"Nenhum cliente cadastrado.\")\n",
-        "            return\n",
-        "\n",
-        "        for cliente in self.clientes:\n",
-        "            print(cliente)\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # FAZER PEDIDO\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def fazer_pedido(self):\n",
-        "\n",
-        "        print(\"\\n\")\n",
-        "        print(\"=\" * 55)\n",
-        "        print(\"FAZER PEDIDO\")\n",
-        "        print(\"=\" * 55)\n",
-        "\n",
-        "        if not self.clientes:\n",
-        "\n",
-        "            print(\n",
-        "                \"Cadastre pelo menos um cliente \"\n",
-        "                \"antes de iniciar.\"\n",
-        "            )\n",
-        "\n",
-        "            return\n",
-        "      # =============================================================\n",
-        "      # MOSTRAR CLINTES DISPONÍVEIS\n",
-        "      # =============================================================\n",
-        "        self.listar_produtos()\n",
-        "\n",
-        "        telefone_cliente_input = input(\n",
-        "            \"\\nDigite o telefone do cliente: \"\n",
-        "        ).strip()\n",
-        "\n",
-        "        cliente = self.buscar_cliente_por_telefone(\n",
-        "            telefone_cliente_input\n",
-        "        )\n",
-        "\n",
-        "        if not cliente:\n",
-        "\n",
-        "            print(\"\\nCliente não encontrado.\")\n",
-        "            return\n",
-        "    # =============================================================\n",
-        "    # MOSTRAR PRODUTO IDENTIFICADO\n",
-        "    # =============================================================\n",
-        "        print(\"\\n\" + \"-\" * 55)\n",
-        "        print(\"CLIENTE SELECIONADO\")\n",
-        "        print(\"-\" * 55)\n",
-        "        print(f\"Nome: {cliente.nome}\")\n",
-        "        print(f\"Telefone: {cliente.telefone}\")\n",
-        "        print(f\"Endereço: {cliente.endereco}\")\n",
-        "        print(\"-\" * 55)\n",
-        "\n",
-        "        itens_pedido = []\n",
-        "\n",
-        "        while True:\n",
-        "\n",
-        "            codigo_produto = input(\n",
-        "                \"\\nDigite o código do produto \"\n",
-        "                \"(ou 0 para sair): \"\n",
-        "            ).strip().upper()\n",
-        "\n",
-        "            if codigo_produto == \"0\":\n",
-        "                break\n",
-        "\n",
-        "            produto = self.buscar_produto_por_codigo(\n",
-        "                codigo_produto\n",
-        "            )\n",
-        "\n",
-        "            if not produto:\n",
-        "\n",
-        "                print(\"Produto não encontrado.\")\n",
-        "                continue\n",
-        "\n",
-        "            if produto.estoque == 0:\n",
-        "\n",
-        "                print(\"Produto sem estoque.\")\n",
-        "                continue\n",
-        "\n",
-        "            try:\n",
-        "\n",
-        "                quantidade = int(\n",
-        "                    input(\"Quantidade: \")\n",
-        "                )\n",
-        "\n",
-        "            except ValueError:\n",
-        "\n",
-        "                print(\n",
-        "                    \"Quantidade inválida. \"\n",
-        "                    \"Tente novamente.\"\n",
-        "                )\n",
-        "\n",
-        "                continue\n",
-        "\n",
-        "            if quantidade <= 0:\n",
-        "\n",
-        "                print(\n",
-        "                    \"Quantidade deve ser maior que zero.\"\n",
-        "                )\n",
-        "\n",
-        "                continue\n",
-        "\n",
-        "            if quantidade > produto.estoque:\n",
-        "\n",
-        "                print(\n",
-        "                    \"Quantidade maior que \"\n",
-        "                    \"disponível em estoque.\"\n",
-        "                )\n",
-        "\n",
-        "                continue\n",
-        "\n",
-        "            # Retira do estoque\n",
-        "            produto.estoque -= quantidade\n",
-        "\n",
-        "            # Adiciona ao pedido\n",
-        "            itens_pedido.append(\n",
-        "                {\n",
-        "                    \"produto\": produto,\n",
-        "                    \"quantidade\": quantidade\n",
-        "                }\n",
-        "            )\n",
-        "\n",
-        "            subtotal = produto.preco * quantidade\n",
-        "\n",
-        "            print(\n",
-        "                f\"\\nItem adicionado: \"\n",
-        "                f\"{produto.nome} x{quantidade} \"\n",
-        "                f\"= R$ {subtotal:.2f}\"\n",
-        "            )\n",
-        "\n",
-        "            continuar = input(\n",
-        "                \"Deseja adicionar mais itens? (S/N): \"\n",
-        "            ).strip().lower()\n",
-        "\n",
-        "            if continuar != \"s\":\n",
-        "                break\n",
-        "\n",
-        "        # Se nenhum item foi adicionado\n",
-        "        if not itens_pedido:\n",
-        "\n",
-        "            print(\n",
-        "                \"\\nPedido cancelado. \"\n",
-        "                \"Nenhum item adicionado.\"\n",
-        "            )\n",
-        "\n",
-        "            return\n",
-        "\n",
-        "        # Cria o pedido\n",
-        "        pedido = Pedido(\n",
-        "            self.proximo_numero_pedido,\n",
-        "            datetime.now(),\n",
-        "            cliente,\n",
-        "            itens_pedido\n",
-        "        )\n",
-        "\n",
-        "        self.pedidos.append(pedido)\n",
-        "\n",
-        "        self.proximo_numero_pedido += 1\n",
-        "\n",
-        "        # =====================================================\n",
-        "        # PEDIDO SEPARADO\n",
-        "        # =====================================================\n",
-        "\n",
-        "        print(\"\\n\\n\")\n",
-        "        print(\"=\" * 60)\n",
-        "        print(\"PEDIDO REALIZADO COM SUCESSO\")\n",
-        "        print(\"=\" * 60)\n",
-        "\n",
-        "        print(\n",
-        "            f\"Pedido: #{pedido.numero}\"\n",
-        "        )\n",
-        "\n",
-        "        print(\n",
-        "            f\"Cliente: {pedido.cliente.nome}\"\n",
-        "        )\n",
-        "\n",
-        "        print(\n",
-        "            f\"Telefone: {pedido.cliente.telefone}\"\n",
-        "        )\n",
-        "\n",
-        "        print(\n",
-        "            f\"Data: {pedido.data.strftime('%d/%m/%Y %H:%M')}\"\n",
-        "        )\n",
-        "\n",
-        "        print(\"\\n\" + \"-\" * 60)\n",
-        "        print(\"ITENS DO PEDIDO\")\n",
-        "        print(\"-\" * 60)\n",
-        "\n",
-        "        for item in pedido.itens:\n",
-        "\n",
-        "            produto = item[\"produto\"]\n",
-        "            quantidade = item[\"quantidade\"]\n",
-        "\n",
-        "            subtotal = produto.preco * quantidade\n",
-        "\n",
-        "            print(\n",
-        "                f\"{produto.nome} \"\n",
-        "                f\"x{quantidade} \"\n",
-        "                f\"........ R$ {subtotal:.2f}\"\n",
-        "            )\n",
-        "\n",
-        "        print(\"-\" * 60)\n",
-        "\n",
-        "        print(\n",
-        "            f\"TOTAL: R$ {pedido.total:.2f}\"\n",
-        "        )\n",
-        "\n",
-        "        print(\n",
-        "            \"STATUS: Pendente\"\n",
-        "        )\n",
-        "\n",
-        "        print(\"=\" * 60)\n",
-        "\n",
-        "        print(\n",
-        "            \"\\nPedido adicionado à lista de pedidos.\"\n",
-        "        )\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # LISTAR PEDIDOS\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def listar_pedidos(self):\n",
-        "\n",
-        "        print(\"\\n\\n\")]\n",
-        "        print(\"=\" * 60)\n",
-        "        print(\"PEDIDOS REALIZADOS\")\n",
-        "        print(\"=\" * 60)\n",
-        "\n",
-        "        if not self.pedidos:\n",
-        "\n",
-        "            print(\"\\nNenhum pedido encontrado.\")\n",
-        "            print(\"=\" * 60)\n",
-        "\n",
-        "            return\n",
-        "\n",
-        "        for pedido in self.pedidos:\n",
-        "\n",
-        "            print(\"\\n\")\n",
-        "            print(\"=\" * 60)\n",
-        "\n",
-        "            print(\n",
-        "                f\"PEDIDO #{pedido.numero}\"\n",
-        "            )\n",
-        "\n",
-        "            print(\n",
-        "                f\"Cliente: {pedido.cliente.nome}\"\n",
-        "            )\n",
-        "\n",
-        "            print(\n",
-        "                f\"Telefone: {pedido.cliente.telefone}\"\n",
-        "            )\n",
-        "\n",
-        "            print(\n",
-        "                f\"Data: \"\n",
-        "                f\"{pedido.data.strftime('%d/%m/%Y %H:%M')}\"\n",
-        "            )\n",
-        "\n",
-        "            print(\"-\" * 60)\n",
-        "\n",
-        "            print(\"Itens:\")\n",
-        "\n",
-        "            for item in pedido.itens:\n",
-        "\n",
-        "                produto = item[\"produto\"]\n",
-        "                quantidade = item[\"quantidade\"]\n",
-        "\n",
-        "                subtotal = produto.preco * quantidade\n",
-        "\n",
-        "                print(\n",
-        "                    f\"  - {produto.nome} \"\n",
-        "                    f\"x{quantidade} \"\n",
-        "                    f\"........ R$ {subtotal:.2f}\"\n",
-        "                )\n",
-        "\n",
-        "            print(\"-\" * 60)\n",
-        "\n",
-        "            print(\n",
-        "                f\"TOTAL: R$ {pedido.total:.2f}\"\n",
-        "            )\n",
-        "\n",
-        "            print(\n",
-        "                \"STATUS: Pendente\"\n",
-        "            )\n",
-        "\n",
-        "        print(\"=\" * 60)\n",
-        "\n",
-        "    # =========================================================\n",
-        "    # RELATÓRIO DE VENDAS\n",
-        "    # =========================================================\n",
-        "\n",
-        "    def relatorio_vendas(self):\n",
-        "\n",
-        "        print(\"\\n\")\n",
-        "        print(\"=\" * 50)\n",
-        "        print(\"RELATÓRIO DE VENDAS\")\n",
-        "        print(\"=\" * 50)\n",
-        "\n",
-        "        if not self.pedidos:\n",
-        "\n",
-        "            print(\"Nenhum pedido encontrado.\")\n",
-        "            return\n",
-        "\n",
-        "        total_vendas = sum(\n",
-        "            pedido.total\n",
-        "            for pedido in self.pedidos\n",
-        "        )\n",
-        "\n",
-        "        print(\n",
-        "            f\"Quantidade de pedidos: \"\n",
-        "            f\"{len(self.pedidos)}\"\n",
-        "        )\n",
-        "\n",
-        "        print(\n",
-        "            f\"Total de vendas: \"\n",
-        "            f\"R$ {total_vendas:.2f}\"\n",
-        "        )\n",
-        "\n",
-        "        produtos_vendidos = {}\n",
-        "\n",
-        "        for pedido in self.pedidos:\n",
-        "\n",
-        "            for item in pedido.itens:\n",
-        "\n",
-        "                produto = item[\"produto\"]\n",
-        "                quantidade = item[\"quantidade\"]\n",
-        "\n",
-        "                produtos_vendidos[produto.nome] = (\n",
-        "                    produtos_vendidos.get(\n",
-        "                        produto.nome,\n",
-        "                        0\n",
-        "                    ) + quantidade\n",
-        "                )\n",
-        "\n",
-        "        print(\"\\nProdutos mais vendidos:\")\n",
-        "\n",
-        "        for produto, quantidade in produtos_vendidos.items():\n",
-        "\n",
-        "            print(\n",
-        "                f\"{produto}: \"\n",
-        "                f\"{quantidade} unidades\"\n",
-        "            )\n",
-        "\n",
-        "\n",
-        "# =============================================================\n",
-        "# INICIAR SISTEMA\n",
-        "# =============================================================\n",
-        "\n",
-        "if __name__ == \"__main__\":\n",
-        "\n",
-        "    sistema = CoffeShopTiaRosa()\n",
-        "    sistema.executar()"
-      ],
-      "metadata": {
-        "colab": {
-          "base_uri": "https://localhost:8080/"
-        },
-        "id": "T4S-nUJaZsOQ",
-        "outputId": "63ff61d7-a46a-4c22-b141-ed9f5f1502b2"
-      },
-      "execution_count": 1,
-      "outputs": [
-        {
-          "output_type": "stream",
-          "name": "stdout",
-          "text": [
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 1\n",
-            "\n",
-            "========================================\n",
-            "CADASTRO DE PRODUTO\n",
-            "========================================\n",
-            "Digite o código do produto: 005\n",
-            "Digite o nome do produto: Café sem açúcar\n",
-            "\n",
-            "Já existe um produto com esse código.\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 1\n",
-            "\n",
-            "========================================\n",
-            "CADASTRO DE PRODUTO\n",
-            "========================================\n",
-            "Digite o código do produto: 010\n",
-            "Digite o nome do produto: café sem açucar\n",
-            "Digite o preço do produto: 2,99\n",
-            "Estoque inicial: 10\n",
-            "Digite a categoria do produto: café\n",
-            "\n",
-            "Produto cadastrado com sucesso!\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 2\n",
-            "\n",
-            "======================================================================\n",
-            "                         LISTA DE PRODUTOS\n",
-            "======================================================================\n",
-            "001 - Café tradicional / R$ 2.00 / Estoque: 20 / Categoria: Bebida\n",
-            "002 - Café com leite / R$ 5.00 / Estoque: 20 / Categoria: Bebida\n",
-            "003 - Cappuccino / R$ 7.50 / Estoque: 20 / Categoria: Bebida\n",
-            "004 - Pão de Queijo / R$ 3.50 / Estoque: 20 / Categoria: Café da manhã\n",
-            "005 - Bolo de chocolate / R$ 7.00 / Estoque: 20 / Categoria: Doce\n",
-            "010 - café sem açucar / R$ 2.99 / Estoque: 10 / Categoria: café\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 3\n",
-            "\n",
-            "========================================\n",
-            "          CADASTRO DE CLIENTE\n",
-            "========================================\n",
-            "Digite o nome do cliente: Professor\n",
-            "Digite o endereço do cliente: Iesb\n",
-            "Digite o telefone do cliente: 61\n",
-            "\n",
-            "Cliente cadastrado com sucesso!\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 3\n",
-            "\n",
-            "========================================\n",
-            "          CADASTRO DE CLIENTE\n",
-            "========================================\n",
-            "Digite o nome do cliente: Professor\n",
-            "Digite o endereço do cliente: iesb\n",
-            "Digite o telefone do cliente: 619\n",
-            "\n",
-            "Cliente cadastrado com sucesso!\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 5\n",
-            "\n",
-            "\n",
-            "=======================================================\n",
-            "FAZER PEDIDO\n",
-            "=======================================================\n",
-            "\n",
-            "======================================================================\n",
-            "                         LISTA DE PRODUTOS\n",
-            "======================================================================\n",
-            "001 - Café tradicional / R$ 2.00 / Estoque: 20 / Categoria: Bebida\n",
-            "002 - Café com leite / R$ 5.00 / Estoque: 20 / Categoria: Bebida\n",
-            "003 - Cappuccino / R$ 7.50 / Estoque: 20 / Categoria: Bebida\n",
-            "004 - Pão de Queijo / R$ 3.50 / Estoque: 20 / Categoria: Café da manhã\n",
-            "005 - Bolo de chocolate / R$ 7.00 / Estoque: 20 / Categoria: Doce\n",
-            "010 - café sem açucar / R$ 2.99 / Estoque: 10 / Categoria: café\n",
-            "\n",
-            "Digite o telefone do cliente: 619\n",
-            "\n",
-            "-------------------------------------------------------\n",
-            "CLIENTE SELECIONADO\n",
-            "-------------------------------------------------------\n",
-            "Nome: Professor\n",
-            "Telefone: 619\n",
-            "Endereço: iesb\n",
-            "-------------------------------------------------------\n",
-            "\n",
-            "Digite o código do produto (ou 0 para sair): 001\n",
-            "Quantidade: 1\n",
-            "\n",
-            "Item adicionado: Café tradicional x1 = R$ 2.00\n",
-            "Deseja adicionar mais itens? (S/N): s\n",
-            "\n",
-            "Digite o código do produto (ou 0 para sair): 002\n",
-            "Quantidade: 1\n",
-            "\n",
-            "Item adicionado: Café com leite x1 = R$ 5.00\n",
-            "Deseja adicionar mais itens? (S/N): n\n",
-            "\n",
-            "\n",
-            "\n",
-            "============================================================\n",
-            "PEDIDO REALIZADO COM SUCESSO\n",
-            "============================================================\n",
-            "Pedido: #1\n",
-            "Cliente: Professor\n",
-            "Telefone: 619\n",
-            "Data: 21/08/2026 16:02\n",
-            "\n",
-            "------------------------------------------------------------\n",
-            "ITENS DO PEDIDO\n",
-            "------------------------------------------------------------\n",
-            "Café tradicional x1 ........ R$ 2.00\n",
-            "Café com leite x1 ........ R$ 5.00\n",
-            "------------------------------------------------------------\n",
-            "TOTAL: R$ 7.00\n",
-            "STATUS: Pendente\n",
-            "============================================================\n",
-            "\n",
-            "Pedido adicionado à lista de pedidos.\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 6\n",
-            "\n",
-            "\n",
-            "\n",
-            "============================================================\n",
-            "PEDIDOS REALIZADOS\n",
-            "============================================================\n",
-            "\n",
-            "\n",
-            "============================================================\n",
-            "PEDIDO #1\n",
-            "Cliente: Professor\n",
-            "Telefone: 619\n",
-            "Data: 21/08/2026 16:02\n",
-            "------------------------------------------------------------\n",
-            "Itens:\n",
-            "  - Café tradicional x1 ........ R$ 2.00\n",
-            "  - Café com leite x1 ........ R$ 5.00\n",
-            "------------------------------------------------------------\n",
-            "TOTAL: R$ 7.00\n",
-            "STATUS: Pendente\n",
-            "============================================================\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 5\n",
-            "\n",
-            "\n",
-            "=======================================================\n",
-            "FAZER PEDIDO\n",
-            "=======================================================\n",
-            "\n",
-            "======================================================================\n",
-            "                         LISTA DE PRODUTOS\n",
-            "======================================================================\n",
-            "001 - Café tradicional / R$ 2.00 / Estoque: 19 / Categoria: Bebida\n",
-            "002 - Café com leite / R$ 5.00 / Estoque: 19 / Categoria: Bebida\n",
-            "003 - Cappuccino / R$ 7.50 / Estoque: 20 / Categoria: Bebida\n",
-            "004 - Pão de Queijo / R$ 3.50 / Estoque: 20 / Categoria: Café da manhã\n",
-            "005 - Bolo de chocolate / R$ 7.00 / Estoque: 20 / Categoria: Doce\n",
-            "010 - café sem açucar / R$ 2.99 / Estoque: 10 / Categoria: café\n",
-            "\n",
-            "Digite o telefone do cliente: 619\n",
-            "\n",
-            "-------------------------------------------------------\n",
-            "CLIENTE SELECIONADO\n",
-            "-------------------------------------------------------\n",
-            "Nome: Professor\n",
-            "Telefone: 619\n",
-            "Endereço: iesb\n",
-            "-------------------------------------------------------\n",
-            "\n",
-            "Digite o código do produto (ou 0 para sair): 2\n",
-            "Produto não encontrado.\n",
-            "\n",
-            "Digite o código do produto (ou 0 para sair): 2\n",
-            "Produto não encontrado.\n",
-            "\n",
-            "Digite o código do produto (ou 0 para sair): 002\n",
-            "Quantidade: 2\n",
-            "\n",
-            "Item adicionado: Café com leite x2 = R$ 10.00\n",
-            "Deseja adicionar mais itens? (S/N): s\n",
-            "\n",
-            "Digite o código do produto (ou 0 para sair): 004\n",
-            "Quantidade: 4\n",
-            "\n",
-            "Item adicionado: Pão de Queijo x4 = R$ 14.00\n",
-            "Deseja adicionar mais itens? (S/N): n\n",
-            "\n",
-            "\n",
-            "\n",
-            "============================================================\n",
-            "PEDIDO REALIZADO COM SUCESSO\n",
-            "============================================================\n",
-            "Pedido: #2\n",
-            "Cliente: Professor\n",
-            "Telefone: 619\n",
-            "Data: 21/08/2026 16:06\n",
-            "\n",
-            "------------------------------------------------------------\n",
-            "ITENS DO PEDIDO\n",
-            "------------------------------------------------------------\n",
-            "Café com leite x2 ........ R$ 10.00\n",
-            "Pão de Queijo x4 ........ R$ 14.00\n",
-            "------------------------------------------------------------\n",
-            "TOTAL: R$ 24.00\n",
-            "STATUS: Pendente\n",
-            "============================================================\n",
-            "\n",
-            "Pedido adicionado à lista de pedidos.\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 6\n",
-            "\n",
-            "\n",
-            "\n",
-            "============================================================\n",
-            "PEDIDOS REALIZADOS\n",
-            "============================================================\n",
-            "\n",
-            "\n",
-            "============================================================\n",
-            "PEDIDO #1\n",
-            "Cliente: Professor\n",
-            "Telefone: 619\n",
-            "Data: 21/08/2026 16:02\n",
-            "------------------------------------------------------------\n",
-            "Itens:\n",
-            "  - Café tradicional x1 ........ R$ 2.00\n",
-            "  - Café com leite x1 ........ R$ 5.00\n",
-            "------------------------------------------------------------\n",
-            "TOTAL: R$ 7.00\n",
-            "STATUS: Pendente\n",
-            "\n",
-            "\n",
-            "============================================================\n",
-            "PEDIDO #2\n",
-            "Cliente: Professor\n",
-            "Telefone: 619\n",
-            "Data: 21/08/2026 16:06\n",
-            "------------------------------------------------------------\n",
-            "Itens:\n",
-            "  - Café com leite x2 ........ R$ 10.00\n",
-            "  - Pão de Queijo x4 ........ R$ 14.00\n",
-            "------------------------------------------------------------\n",
-            "TOTAL: R$ 24.00\n",
-            "STATUS: Pendente\n",
-            "============================================================\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 7\n",
-            "\n",
-            "\n",
-            "==================================================\n",
-            "RELATÓRIO DE VENDAS\n",
-            "==================================================\n",
-            "Quantidade de pedidos: 2\n",
-            "Total de vendas: R$ 31.00\n",
-            "\n",
-            "Produtos mais vendidos:\n",
-            "Café tradicional: 1 unidades\n",
-            "Café com leite: 3 unidades\n",
-            "Pão de Queijo: 4 unidades\n",
-            "\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "        CAFÉ - TIA ROSA - SYSTEM\n",
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
-            "1. Cadastrar produto\n",
-            "2. Listar produtos\n",
-            "3. Cadastrar cliente\n",
-            "4. Listar clientes\n",
-            "5. Fazer pedido\n",
-            "6. Listar pedidos\n",
-            "7. Relatório de vendas\n",
-            "0. Sair\n",
-            "\n",
-            "Escolha uma opção: 0\n",
-            "\n",
-            "Obrigado por usar TIA ROSA SYSTEM!\n"
-          ]
-        }
-      ]
-    }
-  ]
-}
+from datetime import datetime
+# =============================================================
+# ORGANIZAÇÃO DA LOJA
+# =============================================================
+class Produto:
+    def __init__(self, codigo, nome, preco, estoque, categoria):
+        self.codigo = codigo
+        self.nome = nome
+        self.preco = float(preco)
+        self.estoque = int(estoque)
+        self.categoria = categoria
+
+    def __str__(self):
+        return (
+            f"{self.codigo} - {self.nome} / "
+            f"R$ {self.preco:.2f} / "
+            f"Estoque: {self.estoque} / "
+            f"Categoria: {self.categoria}"
+        )
+# =============================================================
+# DADOS DOS CLIENTES
+# =============================================================
+class Cliente:
+    def __init__(self, codigo, nome, endereco, telefone):
+        self.codigo = codigo
+        self.nome = nome
+        self.endereco = endereco
+        self.telefone = telefone
+
+    def __str__(self):
+        return (
+            f"{self.codigo} - {self.nome} / "
+            f"{self.endereco} / {self.telefone}"
+        )
+# =============================================================
+# DADOS DOS PEDIDOS
+# =============================================================
+class Pedido:
+    def __init__(self, numero, data, cliente, itens):
+        self.numero = numero
+        self.data = data
+        self.cliente = cliente
+        self.itens = itens
+        self.total = self.calcular_total()
+
+    def calcular_total(self):
+        total = 0.0
+
+        for item in self.itens:
+            produto = item["produto"]
+            quantidade = item["quantidade"]
+
+            total += produto.preco * quantidade
+
+        return round(total, 2)
+  # =============================================================
+  # HORÁRIO DE REALIAÇÃO DO PEDIDO
+  # =============================================================
+    def __str__(self):
+        texto = (
+            f"Pedido #{self.numero} - "
+            f"Cliente: {self.cliente.nome} - "
+            f"Data: {self.data.strftime('%d/%m/%Y %H:%M')}\n")
+
+
+        for item in self.itens:
+            produto = item["produto"]
+            qtd = item["quantidade"]
+
+            texto += (
+                f" - {produto.nome} x{qtd} = "
+                f"R$ {produto.preco * qtd:.2f}\n"
+            )
+
+        texto += f"Total: R$ {self.total:.2f}"
+
+        return texto
+
+
+class CoffeShopTiaRosa:
+
+    def __init__(self):
+        self.produtos = []
+        self.clientes = []
+        self.pedidos = []
+        self.proximo_numero_pedido = 1
+
+        self._carregar_dados_iniciais()
+
+    # =========================================================
+    # DADOS DOS PRODUTOS
+    # =========================================================
+
+    def _carregar_dados_iniciais(self):
+
+        self.produtos.append(
+            Produto(
+                "001",
+                "Café tradicional",
+                2.00,
+                20,
+                "Bebida"
+            )
+        )
+
+        self.produtos.append(
+            Produto(
+                "002",
+                "Café com leite",
+                5.00,
+                20,
+                "Bebida"
+            )
+        )
+
+        self.produtos.append(
+            Produto(
+                "003",
+                "Cappuccino",
+                7.50,
+                20,
+                "Bebida"
+            )
+        )
+
+        self.produtos.append(
+            Produto(
+                "004",
+                "Pão de Queijo",
+                3.50,
+                20,
+                "Café da manhã"
+            )
+        )
+
+        self.produtos.append(
+            Produto(
+                "005",
+                "Bolo de chocolate",
+                7.00,
+                20,
+                "Doce"
+            )
+        )
+
+        self.clientes.append(
+            Cliente("CLI001", "Guilherme Matheus", "Rua A, 123","610000001"
+            )
+        )
+
+        self.clientes.append(
+            Cliente(
+                "CLI002",
+                "Geovana Flor",
+                "Rua B, 456",
+                "610000002"
+            )
+        )
+
+        self.clientes.append(
+            Cliente(
+                "CLI003",
+                "Maria Antonia",
+                "Rua C, 789",
+                "610000003"
+            )
+        )
+
+    # =========================================================
+    # LAYOUT DO MENU PRINCIPAL
+    # =========================================================
+
+    def executar(self):
+
+        while True:
+
+            print("\n" + "~" * 40)
+            print("        CAFÉ - TIA ROSA - SYSTEM")
+            print("~" * 40)
+
+            print("1. Cadastrar produto")
+            print("2. Listar produtos")
+            print("3. Cadastrar cliente")
+            print("4. Listar clientes")
+            print("5. Fazer pedido")
+            print("6. Listar pedidos")
+            print("7. Relatório de vendas")
+            print("0. Sair")
+
+            opcao = input("\nEscolha uma opção: ").strip()
+
+            if opcao == "1":
+                self.cadastrar_produto()
+
+            elif opcao == "2":
+                self.listar_produtos()
+
+            elif opcao == "3":
+                self.cadastrar_cliente()
+
+            elif opcao == "4":
+                self.listar_clientes()
+
+            elif opcao == "5":
+                self.fazer_pedido()
+
+            elif opcao == "6":
+                self.listar_pedidos()
+
+            elif opcao == "7":
+                self.relatorio_vendas()
+
+            elif opcao == "0":
+                print("\nObrigado por usar TIA ROSA SYSTEM!")
+                break
+
+            else:
+                print("\nOpção inválida. Tente novamente.")
+
+    # =========================================================
+    # BUSCAR PRODUTO POR CÓDIGO
+    # =========================================================
+
+    def buscar_produto_por_codigo(self, codigo):
+
+        for produto in self.produtos:
+
+            if produto.codigo.upper() == codigo.upper():
+                return produto
+
+        return None
+
+    # =========================================================
+    # BUSCAR CLIENTE POR TELEFONE
+    # =========================================================
+
+    def buscar_cliente_por_telefone(self, telefone):
+
+        for cliente in self.clientes:
+
+            if cliente.telefone == telefone:
+                return cliente
+
+        return None
+
+    # =========================================================
+    # CADASTRAR PRODUTO
+    # =========================================================
+
+    def cadastrar_produto(self):
+
+        print("\n" + "=" * 40)
+        print("CADASTRO DE PRODUTO")
+        print("=" * 40)
+
+        codigo = input(
+            "Digite o código do produto: "
+        ).strip().upper()
+
+        nome = input(
+            "Digite o nome do produto: "
+        ).strip()
+
+        if self.buscar_produto_por_codigo(codigo):
+
+            print(
+                "\nJá existe um produto com esse código."
+            )
+
+            return
+
+        try:
+
+            preco = float(
+                input(
+                    "Digite o preço do produto: "
+                ).replace(",", ".")
+            )
+
+            estoque = int(
+                input("Estoque inicial: ")
+            )
+
+        except ValueError:
+
+            print(
+                "\nPreço ou estoque inválido. "
+                "Tente novamente."
+            )
+
+            return
+
+        if preco <= 0 or estoque < 0:
+
+            print(
+                "\nPreço deve ser maior que zero "
+                "e estoque não pode ser negativo."
+            )
+
+            return
+
+        categoria = input(
+            "Digite a categoria do produto: "
+        ).strip()
+
+        novo_produto = Produto(
+            codigo,
+            nome,
+            preco,
+            estoque,
+            categoria
+        )
+
+        self.produtos.append(novo_produto)
+
+        print("\nProduto cadastrado com sucesso!")
+
+    # =========================================================
+    # LISTAR PRODUTOS
+    # =========================================================
+
+    def listar_produtos(self):
+
+        print("\n" + "=" * 70)
+        print("                         LISTA DE PRODUTOS")
+        print("=" * 70)
+
+        if not self.produtos:
+
+            print("Nenhum produto cadastrado.")
+            return
+
+        for produto in self.produtos:
+            print(produto)
+
+    # =========================================================
+    # CADASTRAR CLIENTE
+    # =========================================================
+
+    def cadastrar_cliente(self):
+
+        print("\n" + "=" * 40)
+        print("          CADASTRO DE CLIENTE")
+        print("=" * 40)
+
+        nome = input(
+            "Digite o nome do cliente: "
+        ).strip()
+
+        endereco = input(
+            "Digite o endereço do cliente: "
+        ).strip()
+
+        telefone = input(
+            "Digite o telefone do cliente: "
+        ).strip()
+
+        if not nome or not telefone or not endereco:
+
+            print(
+                "\nNome, endereço e telefone "
+                "são campos obrigatórios."
+            )
+
+            return
+
+        if self.buscar_cliente_por_telefone(telefone):
+
+            print(
+                "\nJá existe um cliente com esse telefone."
+            )
+
+            return
+
+        codigo = f"CLI{len(self.clientes) + 1:03d}"
+
+        cliente = Cliente(
+            codigo,
+            nome,
+            endereco,
+            telefone
+        )
+
+        self.clientes.append(cliente)
+
+        print("\nCliente cadastrado com sucesso!")
+
+    # =========================================================
+    # LISTAR CLIENTES
+    # =========================================================
+
+    def listar_clientes(self):
+
+        print("\n" + "=" * 70)
+        print("LISTA DE CLIENTES")
+        print("=" * 70)
+
+        if not self.clientes:
+
+            print("Nenhum cliente cadastrado.")
+            return
+
+        for cliente in self.clientes:
+            print(cliente)
+
+    # =========================================================
+    # FAZER PEDIDO
+    # =========================================================
+
+    def fazer_pedido(self):
+
+        print("\n")
+        print("=" * 55)
+        print("FAZER PEDIDO")
+        print("=" * 55)
+
+        if not self.clientes:
+
+            print(
+                "Cadastre pelo menos um cliente "
+                "antes de iniciar."
+            )
+
+            return
+      # =============================================================
+      # MOSTRAR CLINTES DISPONÍVEIS
+      # =============================================================
+        self.listar_produtos()
+
+        telefone_cliente_input = input(
+            "\nDigite o telefone do cliente: "
+        ).strip()
+
+        cliente = self.buscar_cliente_por_telefone(
+            telefone_cliente_input
+        )
+
+        if not cliente:
+
+            print("\nCliente não encontrado.")
+            return
+    # =============================================================
+    # MOSTRAR PRODUTO IDENTIFICADO
+    # =============================================================
+        print("\n" + "-" * 55)
+        print("CLIENTE SELECIONADO")
+        print("-" * 55)
+        print(f"Nome: {cliente.nome}")
+        print(f"Telefone: {cliente.telefone}")
+        print(f"Endereço: {cliente.endereco}")
+        print("-" * 55)
+
+        itens_pedido = []
+
+        while True:
+
+            codigo_produto = input(
+                "\nDigite o código do produto "
+                "(ou 0 para sair): "
+            ).strip().upper()
+
+            if codigo_produto == "0":
+                break
+
+            produto = self.buscar_produto_por_codigo(
+                codigo_produto
+            )
+
+            if not produto:
+
+                print("Produto não encontrado.")
+                continue
+
+            if produto.estoque == 0:
+
+                print("Produto sem estoque.")
+                continue
+
+            try:
+
+                quantidade = int(
+                    input("Quantidade: ")
+                )
+
+            except ValueError:
+
+                print(
+                    "Quantidade inválida. "
+                    "Tente novamente."
+                )
+
+                continue
+
+            if quantidade <= 0:
+
+                print(
+                    "Quantidade deve ser maior que zero."
+                )
+
+                continue
+
+            if quantidade > produto.estoque:
+
+                print(
+                    "Quantidade maior que "
+                    "disponível em estoque."
+                )
+
+                continue
+
+            # Retira do estoque
+            produto.estoque -= quantidade
+
+            # Adiciona ao pedido
+            itens_pedido.append(
+                {
+                    "produto": produto,
+                    "quantidade": quantidade
+                }
+            )
+
+            subtotal = produto.preco * quantidade
+
+            print(
+                f"\nItem adicionado: "
+                f"{produto.nome} x{quantidade} "
+                f"= R$ {subtotal:.2f}"
+            )
+
+            continuar = input(
+                "Deseja adicionar mais itens? (S/N): "
+            ).strip().lower()
+
+            if continuar != "s":
+                break
+
+        # Se nenhum item foi adicionado
+        if not itens_pedido:
+
+            print(
+                "\nPedido cancelado. "
+                "Nenhum item adicionado."
+            )
+
+            return
+
+        # Cria o pedido
+        pedido = Pedido(
+            self.proximo_numero_pedido,
+            datetime.now(),
+            cliente,
+            itens_pedido
+        )
+
+        self.pedidos.append(pedido)
+
+        self.proximo_numero_pedido += 1
+
+        # =====================================================
+        # PEDIDO SEPARADO
+        # =====================================================
+
+        print("\n\n")
+        print("=" * 60)
+        print("PEDIDO REALIZADO COM SUCESSO")
+        print("=" * 60)
+
+        print(
+            f"Pedido: #{pedido.numero}"
+        )
+
+        print(
+            f"Cliente: {pedido.cliente.nome}"
+        )
+
+        print(
+            f"Telefone: {pedido.cliente.telefone}"
+        )
+
+        print(
+            f"Data: {pedido.data.strftime('%d/%m/%Y %H:%M')}"
+        )
+
+        print("\n" + "-" * 60)
+        print("ITENS DO PEDIDO")
+        print("-" * 60)
+
+        for item in pedido.itens:
+
+            produto = item["produto"]
+            quantidade = item["quantidade"]
+
+            subtotal = produto.preco * quantidade
+
+            print(
+                f"{produto.nome} "
+                f"x{quantidade} "
+                f"........ R$ {subtotal:.2f}"
+            )
+
+        print("-" * 60)
+
+        print(
+            f"TOTAL: R$ {pedido.total:.2f}"
+        )
+
+        print(
+            "STATUS: Pendente"
+        )
+
+        print("=" * 60)
+
+        print(
+            "\nPedido adicionado à lista de pedidos."
+        )
+
+    # =========================================================
+    # LISTAR PEDIDOS
+    # =========================================================
+
+    def listar_pedidos(self):
+
+        print("\n\n")]
+        print("=" * 60)
+        print("PEDIDOS REALIZADOS")
+        print("=" * 60)
+
+        if not self.pedidos:
+
+            print("\nNenhum pedido encontrado.")
+            print("=" * 60)
+
+            return
+
+        for pedido in self.pedidos:
+
+            print("\n")
+            print("=" * 60)
+
+            print(
+                f"PEDIDO #{pedido.numero}"
+            )
+
+            print(
+                f"Cliente: {pedido.cliente.nome}"
+            )
+
+            print(
+                f"Telefone: {pedido.cliente.telefone}"
+            )
+
+            print(
+                f"Data: "
+                f"{pedido.data.strftime('%d/%m/%Y %H:%M')}"
+            )
+
+            print("-" * 60)
+
+            print("Itens:")
+
+            for item in pedido.itens:
+
+                produto = item["produto"]
+                quantidade = item["quantidade"]
+
+                subtotal = produto.preco * quantidade
+
+                print(
+                    f"  - {produto.nome} "
+                    f"x{quantidade} "
+                    f"........ R$ {subtotal:.2f}"
+                )
+
+            print("-" * 60)
+
+            print(
+                f"TOTAL: R$ {pedido.total:.2f}"
+            )
+
+            print(
+                "STATUS: Pendente"
+            )
+
+        print("=" * 60)
+
+    # =========================================================
+    # RELATÓRIO DE VENDAS
+    # =========================================================
+
+    def relatorio_vendas(self):
+
+        print("\n")
+        print("=" * 50)
+        print("RELATÓRIO DE VENDAS")
+        print("=" * 50)
+
+        if not self.pedidos:
+
+            print("Nenhum pedido encontrado.")
+            return
+
+        total_vendas = sum(
+            pedido.total
+            for pedido in self.pedidos
+        )
+
+        print(
+            f"Quantidade de pedidos: "
+            f"{len(self.pedidos)}"
+        )
+
+        print(
+            f"Total de vendas: "
+            f"R$ {total_vendas:.2f}"
+        )
+
+        produtos_vendidos = {}
+
+        for pedido in self.pedidos:
+
+            for item in pedido.itens:
+
+                produto = item["produto"]
+                quantidade = item["quantidade"]
+
+                produtos_vendidos[produto.nome] = (
+                    produtos_vendidos.get(
+                        produto.nome,
+                        0
+                    ) + quantidade
+                )
+
+        print("\nProdutos mais vendidos:")
+
+        for produto, quantidade in produtos_vendidos.items():
+
+            print(
+                f"{produto}: "
+                f"{quantidade} unidades"
+            )
+
+
+# =============================================================
+# INICIAR SISTEMA
+# =============================================================
+
+if __name__ == "__main__":
+
+    sistema = CoffeShopTiaRosa()
+    sistema.executar()
